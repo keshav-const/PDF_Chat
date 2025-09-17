@@ -1,0 +1,133 @@
+I want you to create a full-stack MERN application deployed inside Replit with the following requirements:
+
+🔑 Features & Functionality
+
+Authentication (Supabase)
+
+Implement email + password signup & login.
+
+Use Supabase Auth for handling user authentication.
+
+Store users securely, with hashed passwords managed by Supabase.
+
+Maintain sessions with JWT.
+
+PDF Upload & Conversational Q/A (Gemini API)
+
+Logged-in users can upload one or more PDF files.
+
+Store uploaded PDFs in Supabase storage.
+
+Parse and chunk PDF content for context.
+
+Use Google Gemini API to provide conversational answers to user questions about their uploaded PDFs.
+
+The chat interface should maintain contextual conversation (like ChatGPT).
+
+Conversation History
+
+Save every conversation (messages, answers) in Supabase PostgreSQL.
+
+Users should have a History section in their dashboard where they can revisit old conversations.
+
+When clicking a conversation from history, reload it in the chat window.
+
+Frontend (React + TailwindCSS)
+
+Build with Vite + React for speed.
+
+Styling with TailwindCSS.
+
+Responsive design.
+
+Pages needed:
+
+Login / Signup
+
+Dashboard: Upload PDFs, ask questions, view answers.
+
+Chat Window: Conversational UI (bubbles style).
+
+History Page: List of past conversations.
+
+Backend (Express + Node.js)
+
+Routes:
+
+/auth/signup → signup new users
+
+/auth/login → login users
+
+/upload → handle PDF uploads
+
+/chat → handle Q/A with Gemini API
+
+/history → fetch and store chat history
+
+Use Supabase client SDK for database + storage.
+
+Use Gemini API for intelligent answers.
+
+Database Schema (Supabase - PostgreSQL)
+
+users (id, email, password_hash, created_at)
+
+files (id, user_id, file_path, uploaded_at)
+
+conversations (id, user_id, title, created_at)
+
+messages (id, conversation_id, sender (user/ai), content, created_at)
+
+⚙️ Tech Stack
+
+Frontend: React (Vite) + TailwindCSS
+
+Backend: Node.js + Express
+
+Database: Supabase (PostgreSQL + Auth + Storage)
+
+AI: Google Gemini API
+
+Authentication: Supabase Auth with JWT sessions
+
+🔧 Replit Setup Requirements
+
+Create a single Replit project containing both frontend & backend.
+
+Provide scripts in package.json:
+
+"dev" → run frontend (Vite)
+
+"server" → run backend (Express)
+
+"start" → run both together (e.g., with concurrently)
+
+Install and configure dependencies automatically:
+
+React, Vite, TailwindCSS, Axios, React Router DOM
+
+Express, Supabase JS client, Multer (for PDFs), pdf-parse
+
+dotenv, concurrently
+
+Add README.md with setup + run instructions for Replit.
+
+📦 Deliverables
+
+Complete codebase (frontend + backend) inside Replit.
+
+Configured Supabase client (Auth + Storage + Database).
+
+Configured Gemini API integration.
+
+User auth flow working.
+
+PDF upload + parsing pipeline working.
+
+Chat interface with persistent history.
+
+Responsive and styled frontend.
+
+Instructions to run inside Replit (npm install, npm run dev).
+
+👉 Build this application fully inside Replit with working frontend, backend, and Supabase/Gemini integration.
