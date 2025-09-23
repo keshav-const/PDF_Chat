@@ -823,13 +823,9 @@
 
 // export const storage = new SupabaseStorage();
 
-import { and, eq, desc } from "drizzle-orm";
-import { db } from "./db"; // Correctly imports from db.ts
+import { createClient } from '@supabase/supabase-js';
+import { config } from './config';
 import {
-  users,
-  files,
-  conversations,
-  messages,
   type InsertUser,
   type InsertFile,
   type InsertConversation,
@@ -839,51 +835,134 @@ import {
   type Conversation,
   type Message,
 } from "../shared/schema";
-// This now correctly imports the function that we just added
 import { downloadFromSupabase } from "./services/supabase";
+
+// Create Supabase client
+const supabase = createClient(config.SUPABASE_URL!, config.SUPABASE_ANON_KEY!);
 
 export class SupabaseStorage {
   // --- USER METHODS ---
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
-    return result[0];
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+    
+    if (error || !data) return undefined;
+    
+    return {
+      id: data.id,
+      email: data.email,
+      password: data.password,
+      createdAt: new Date(data.created_at)
+    };
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    return result[0];
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error || !data) return undefined;
+    
+    return {
+      id: data.id,
+      email: data.email,
+      password: data.password,
+      createdAt: new Date(data.created_at)
+    };
   }
 
   async createUser(data: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(data).returning();
-    return user;
+    const { data: result, error } = await supabase
+      .from('users')
+      .insert(data)
+      .select()
+      .single();
+    
+    if (error) throw new Error(`Failed to create user: ${error.message}`);
+    
+    return {
+      id: result.id,
+      email: result.email,
+      password: result.password,
+      createdAt: new Date(result.created_at)
+    };
   }
 
   // --- FILE METHODS ---
   async getFile(id: string): Promise<File | undefined> {
-    const result = await db.select().from(files).where(eq(files.id, id)).limit(1);
-    return result[0];
+    const { data, error } = await supabase
+      .from('files')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error || !data) return undefined;
+    
+    return {
+      id: data.id,
+      userId: data.user_id,
+      fileName: data.file_name,
+      filePath: data.file_path,
+      fileSize: data.file_size,
+      uploadedAt: new Date(data.uploaded_at)
+    };
   }
 
   async getFilesByUser(userId: string): Promise<File[]> {
-    return db
-      .select()
-      .from(files)
-      .where(eq(files.userId, userId))
-      .orderBy(desc(files.uploadedAt));
+    const { data, error } = await supabase
+      .from('files')
+      .select('*')
+      .eq('user_id', userId)
+      .order('uploaded_at', { ascending: false });
+    
+    if (error) return [];
+    
+    return (data || []).map(file => ({
+      id: file.id,
+      userId: file.user_id,
+      fileName: file.file_name,
+      filePath: file.file_path,
+      fileSize: file.file_size,
+      uploadedAt: new Date(file.uploaded_at)
+    }));
   }
 
   async createFile(data: InsertFile): Promise<File> {
-    const [file] = await db.insert(files).values(data).returning();
-    return file;
+    const { data: result, error } = await supabase
+      .from('files')
+      .insert({
+        user_id: data.userId,
+        file_name: data.fileName,
+        file_path: data.filePath,
+        file_size: data.fileSize
+      })
+      .select()
+      .single();
+    
+    if (error) throw new Error(`Failed to create file: ${error.message}`);
+    
+    return {
+      id: result.id,
+      userId: result.user_id,
+      fileName: result.file_name,
+      filePath: result.file_path,
+      fileSize: result.file_size,
+      uploadedAt: new Date(result.uploaded_at)
+    };
   }
 
   async deleteFile(id: string): Promise<void> {
-    await db.delete(files).where(eq(files.id, id));
+    const { error } = await supabase
+      .from('files')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw new Error(`Failed to delete file: ${error.message}`);
   }
 
   async downloadFromSupabase(filePath: string): Promise<string> {
@@ -892,38 +971,68 @@ export class SupabaseStorage {
 
   // --- CONVERSATION & MESSAGE METHODS ---
   async getConversation(id: string): Promise<Conversation | undefined> {
-    const result = await db
-      .select()
-      .from(conversations)
-      .where(eq(conversations.id, id))
-      .limit(1);
-    return result[0];
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error || !data) return undefined;
+    
+    return {
+      id: data.id,
+      userId: data.user_id,
+      fileId: data.file_id,
+      title: data.title,
+      createdAt: new Date(data.created_at)
+    };
   }
 
   async getConversationsByUser(userId: string): Promise<Conversation[]> {
-    return db
-      .select()
-      .from(conversations)
-      .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.createdAt));
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) return [];
+    
+    return (data || []).map(conversation => ({
+      id: conversation.id,
+      userId: conversation.user_id,
+      fileId: conversation.file_id,
+      title: conversation.title,
+      createdAt: new Date(conversation.created_at)
+    }));
   }
 
   async getConversationsWithFiles(userId: string) {
     try {
-      const result = await db
-        .select({
-          id: conversations.id,
-          userId: conversations.userId,
-          fileId: conversations.fileId,
-          title: conversations.title,
-          createdAt: conversations.createdAt,
-          fileName: files.fileName,
-        })
-        .from(conversations)
-        .leftJoin(files, eq(conversations.fileId, files.id))
-        .where(eq(conversations.userId, userId))
-        .orderBy(desc(conversations.createdAt));
-      return result;
+      const { data, error } = await supabase
+        .from('conversations')
+        .select(`
+          id,
+          user_id,
+          file_id,
+          title,
+          created_at,
+          files!left(file_name)
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return (data || []).map(conversation => ({
+        id: conversation.id,
+        userId: conversation.user_id,
+        fileId: conversation.file_id,
+        title: conversation.title,
+        createdAt: new Date(conversation.created_at),
+        fileName: Array.isArray(conversation.files) && conversation.files.length > 0
+          ? conversation.files[0].file_name
+          : null
+      }));
     } catch (error) {
       console.error("Error getting conversations with files:", error);
       throw new Error("Failed to get conversations with files");
@@ -931,25 +1040,77 @@ export class SupabaseStorage {
   }
 
   async createConversation(data: InsertConversation): Promise<Conversation> {
-    const [convo] = await db.insert(conversations).values(data).returning();
-    return convo;
+    const { data: result, error } = await supabase
+      .from('conversations')
+      .insert({
+        user_id: data.userId,
+        file_id: data.fileId,
+        title: data.title
+      })
+      .select()
+      .single();
+    
+    if (error) throw new Error(`Failed to create conversation: ${error.message}`);
+    
+    return {
+      id: result.id,
+      userId: result.user_id,
+      fileId: result.file_id,
+      title: result.title,
+      createdAt: new Date(result.created_at)
+    };
   }
 
   async deleteConversation(id: string): Promise<void> {
-    await db.delete(conversations).where(eq(conversations.id, id));
+    const { error } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw new Error(`Failed to delete conversation: ${error.message}`);
   }
 
   async getMessagesByConversation(conversationId: string): Promise<Message[]> {
-    return db
-      .select()
-      .from(messages)
-      .where(eq(messages.conversationId, conversationId))
-      .orderBy(messages.createdAt);
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+    
+    if (error) return [];
+    
+    return (data || []).map(message => ({
+      id: message.id,
+      conversationId: message.conversation_id,
+      sender: message.sender,
+      content: message.content,
+      metadata: message.metadata,
+      createdAt: new Date(message.created_at)
+    }));
   }
 
   async createMessage(data: InsertMessage): Promise<Message> {
-    const [message] = await db.insert(messages).values(data).returning();
-    return message;
+    const { data: result, error } = await supabase
+      .from('messages')
+      .insert({
+        conversation_id: data.conversationId,
+        sender: data.sender,
+        content: data.content,
+        metadata: data.metadata || null
+      })
+      .select()
+      .single();
+    
+    if (error) throw new Error(`Failed to create message: ${error.message}`);
+    
+    return {
+      id: result.id,
+      conversationId: result.conversation_id,
+      sender: result.sender,
+      content: result.content,
+      metadata: result.metadata,
+      createdAt: new Date(result.created_at)
+    };
   }
 }
 

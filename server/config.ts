@@ -14,17 +14,17 @@
 //   SESSION_SECRET: process.env.SESSION_SECRET || 'default-session-secret-change-in-production'
 // } as const;
 
-import dotenv from "dotenv";
 import { z } from "zod";
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+// Load environment variables
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const configSchema = z.object({
-  DATABASE_URL: z.string().optional(),
+  DATABASE_URL: z.string(),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_ANON_KEY: z.string().optional(),
-  // --- THIS IS THE FIX ---
-  // Added the missing SUPABASE_BUCKET variable to the configuration schema.
   SUPABASE_BUCKET: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
   NODE_ENV: z.string().default("development"),
