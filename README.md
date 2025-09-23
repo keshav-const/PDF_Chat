@@ -35,5 +35,5 @@ A full-stack MERN application that transforms PDF documents into intelligent con
 - **Supabase Storage** - File storage for PDF documents
 - **Google Gemini API** - Advanced AI for document understanding
 
-## 🏗️ Architecture
+
 
