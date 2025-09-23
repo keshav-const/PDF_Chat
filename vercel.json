@@ -1,3 +1,4 @@
+
 {
   "version": 2,
   "builds": [
@@ -17,6 +18,9 @@
     {
       "src": "/api/(.*)",
       "dest": "server/index.ts"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
