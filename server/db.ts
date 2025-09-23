@@ -44,15 +44,40 @@
 // // Create the Drizzle instance and export it
 // export const db = drizzle(pool, { schema });
 
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import { config } from "./config";
-import * as schema from "../shared/schema";
+// import { drizzle } from "drizzle-orm/node-postgres";
+// import { Pool } from "pg";
+// import { config } from "./config";
+// import * as schema from "../shared/schema";
 
-// This will now correctly use the DATABASE_URL you just added to your .env
-const pool = new Pool({
-  connectionString: config.DATABASE_URL,
-});
+// // This will now correctly use the DATABASE_URL you just added to your .env
+// const pool = new Pool({
+//   connectionString: config.DATABASE_URL,
+// });
 
-// Create the Drizzle instance and export it
-export const db = drizzle(pool, { schema });
+// // Create the Drizzle instance and export it
+// export const db = drizzle(pool, { schema });
+
+
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { Pool } from 'pg';
+import { config } from '../server/config';
+
+// This is required for Vercel
+neonConfig.fetchConnectionCache = true;
+
+let db;
+
+if (config.NODE_ENV === 'production') {
+  // Use Neon for production
+  const sql = neon(config.DATABASE_URL!);
+  db = drizzle(sql);
+} else {
+  // Use node-postgres for development
+  const pool = new Pool({
+    connectionString: config.DATABASE_URL,
+  });
+  db = drizzle(pool);
+}
+
+export { db };
