@@ -141,7 +141,7 @@
 // }
 
 import { createClient } from "@supabase/supabase-js";
-import { config } from "../config";
+import { config } from "../config.js";
 import fs from "fs";
 import path from "path";
 import os from "os";

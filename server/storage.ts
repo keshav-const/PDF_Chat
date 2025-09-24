@@ -824,7 +824,7 @@
 // export const storage = new SupabaseStorage();
 
 import { createClient } from '@supabase/supabase-js';
-import { config } from './config';
+import { config } from './config.js';
 import {
   type InsertUser,
   type InsertFile,
@@ -834,8 +834,8 @@ import {
   type File,
   type Conversation,
   type Message,
-} from "../shared/schema";
-import { downloadFromSupabase } from "./services/supabase";
+} from "../shared/schema.js";
+import { downloadFromSupabase } from "./services/supabase.js";
 
 // Create Supabase client
 const supabase = createClient(config.SUPABASE_URL!, config.SUPABASE_ANON_KEY!);

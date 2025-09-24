@@ -237,8 +237,8 @@
 // Environment variables are now loaded by the "dev" script in package.json.
 import { config } from "./config.js";
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { registerRoutes } from "./routes.js";
+import { setupVite, serveStatic, log } from "./vite.js";
 import pg from "pg";
 
 pg.types.setTypeParser(1114, (stringValue) => new Date(stringValue + "Z"));

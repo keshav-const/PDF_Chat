@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Message } from "@shared/schema";
-import { config } from "../config";
+import { Message } from "@shared/schema.js";
+import { config } from "../config.js";
 
 const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY || "");
 

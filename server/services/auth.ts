@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import session from "express-session";
-import { config } from "../config";
-import { storage } from "../storage";
+import { config } from "../config.js";
+import { storage } from "../storage.js";
 
 declare module "express-session" {
   interface SessionData {
