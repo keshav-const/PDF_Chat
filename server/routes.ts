@@ -857,18 +857,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
-import { storage } from "./storage";
-import { authMiddleware, requireAuth } from "./services/auth";
-import { loginSchema, signupSchema } from "../shared/schema";
-import { processMessage } from "./services/gemini";
-import { parsePDF } from "./services/pdf-parser";
-import { uploadToSupabase, deleteFromSupabase } from "./services/supabase";
+import { storage } from "./storage.js";
+import { authMiddleware, requireAuth } from "./services/auth.js";
+import { loginSchema, signupSchema } from "../shared/schema.js";
+import { processMessage } from "./services/gemini.js";
+import { parsePDF } from "./services/pdf-parser.js";
+import { uploadToSupabase, deleteFromSupabase } from "./services/supabase.js";
 import {
   uploadToLocalStorage,
   deleteFromLocalStorage,
   getLocalFilePath,
-} from "./services/local-storage";
-import { config } from "./config";
+} from "./services/local-storage.js";
+import { config } from "./config.js";
 import bcrypt from "bcrypt";
 import fs from "fs";
 

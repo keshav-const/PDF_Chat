@@ -61,7 +61,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { Pool } from 'pg';
-import { config } from '../server/config';
+import { config } from '../server/config.js';
 
 // This is required for Vercel
 neonConfig.fetchConnectionCache = true;
