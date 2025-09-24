@@ -271,5 +271,10 @@ export const signupSchema = loginSchema
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+  export const sessions = pgTable("sessions", {
+  sid: varchar("sid").primaryKey(),
+  sess: jsonb("sess").notNull(),
+  expire: timestamp("expire", { mode: "date" }).notNull(),
+});
 export type LoginData = z.infer<typeof loginSchema>;
 export type SignupData = z.infer<typeof signupSchema>;

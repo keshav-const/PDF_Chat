@@ -58,26 +58,55 @@
 // export const db = drizzle(pool, { schema });
 
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+// import { drizzle } from 'drizzle-orm/node-postgres';
+// import { neon, neonConfig } from '@neondatabase/serverless';
+// import { Pool } from 'pg';
+// import { config } from '../server/config.js';
+
+// // This is required for Vercel
+// neonConfig.fetchConnectionCache = true;
+
+// let db;
+
+// if (config.NODE_ENV === 'production') {
+//   // Use Neon for production
+//   const sql = neon(config.DATABASE_URL!);
+//   db = drizzle(sql);
+// } else {
+//   // Use node-postgres for development
+//   const pool = new Pool({
+//     connectionString: config.DATABASE_URL,
+//   });
+//   db = drizzle(pool);
+// }
+
+// export { db };
+
+import { drizzle as drizzleNodePostgres, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { drizzle as drizzleNeon, NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { Pool } from 'pg';
 import { config } from '../server/config.js';
+import * as schema from '../shared/schema.js';
 
 // This is required for Vercel
 neonConfig.fetchConnectionCache = true;
 
-let db;
+// Define a type that can be either of the two database types
+let db: NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
 
 if (config.NODE_ENV === 'production') {
   // Use Neon for production
   const sql = neon(config.DATABASE_URL!);
-  db = drizzle(sql);
+  // Use the drizzle function from 'drizzle-orm/neon-http'
+  db = drizzleNeon(sql, { schema });
 } else {
   // Use node-postgres for development
   const pool = new Pool({
     connectionString: config.DATABASE_URL,
   });
-  db = drizzle(pool);
+  // Use the drizzle function from 'drizzle-orm/node-postgres'
+  db = drizzleNodePostgres(pool, { schema });
 }
 
 export { db };
