@@ -235,6 +235,8 @@
 
 // All dotenv and path imports are removed.
 // Environment variables are now loaded by the "dev" script in package.json.
+import dotenv from "dotenv";
+dotenv.config();
 import { config } from "./config.js";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes.js";
