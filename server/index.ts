@@ -246,6 +246,7 @@ import pg from "pg";
 pg.types.setTypeParser(1114, (stringValue) => new Date(stringValue + "Z"));
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
