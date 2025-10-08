@@ -118,8 +118,8 @@ import * as schema from "../shared/schema.js";
 
 // Always use node-postgres (works for both local + Render + Supabase)
 const pool = new Pool({
-  connectionString: config.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Supabase
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 export const db = drizzle(pool, { schema });
